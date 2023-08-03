@@ -1,3 +1,12 @@
+INSERT INTO users(email, password)
+VALUES('example@yahoo.com', '12345');
+
+INSERT INTO books(id, book_name)
+VALUES(1, 'trading_book_1');
+
+INSERT INTO users_books(user_email, book_id)
+VALUES('example@yahoo.com', 1);
+
 INSERT INTO trades_counter_parties (id, bond_holder_name)
 VALUES(1, 'AZ Holdings Inc');
 

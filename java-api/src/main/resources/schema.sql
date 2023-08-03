@@ -2,7 +2,27 @@ DROP TABLE IF EXISTS trades_counter_parties;
 DROP TABLE IF EXISTS bonds_counter_parties;
 DROP TABLE IF EXISTS trades;
 DROP TABLE IF EXISTS bonds;
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS books;
+DROP TABLE IF EXISTS users_books;
 
+CREATE TABLE users (
+    email VARCHAR(250) NOT NULL,
+    password VARCHAR(250) NOT NULL,
+    PRIMARY KEY (email)
+);
+
+CREATE TABLE books (
+    id INT NOT NULL,
+    book_name VARCHAR(250) NOT NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE users_books (
+    user_email VARCHAR(250) REFERENCES users(email),
+    book_id INT REFERENCES books(id),
+    PRIMARY KEY (user_email, book_id)
+);
 
 CREATE TABLE trades_counter_parties (
     id INT NOT NULL,
