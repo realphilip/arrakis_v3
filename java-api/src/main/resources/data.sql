@@ -1,5 +1,5 @@
 INSERT INTO users(email, password)
-VALUES('example@yahoo.com', '12345');
+VALUES('example@yahoo.com', '$2a$10$b3XX3Of4U/Fy6Khq6CxBZ.ls2OTXh0Gj/mKqpvP/5PDYwssVdoZu.');
 
 INSERT INTO books(id, book_name)
 VALUES(1, 'trading_book_1');
