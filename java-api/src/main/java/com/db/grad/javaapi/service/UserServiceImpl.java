@@ -13,6 +13,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 @Service
 public class UserServiceImpl implements UserService {
     private final UsersRepository usersRepository;
@@ -29,10 +31,12 @@ public class UserServiceImpl implements UserService {
         User user = usersRepository.findById(email)
                 .orElseThrow(() -> new AuthenticationException("User not found with email: " + email));
 
-        if (user.getPassword().equals(password)) {
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+        if (passwordEncoder.matches(password, user.getPassword())) {
             return generateToken(user);
         } else {
-            throw new AuthenticationException("Invalid email or password");
+        throw new AuthenticationException("Invalid email or password");
         }
     }
 

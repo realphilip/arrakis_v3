@@ -40,6 +40,33 @@ public class BondServiceImpl implements BondService {
     }
 
     @Override
+    public List<String> getIsinsOfUrgentUnredeemedBonds(String date,int daysBefore, int daysAfter) throws ParseException{
+        List<Bond> bonds5BusinessDaysBeforeAndToday = new ArrayList<>();
+        // convert date from String to Date
+        Date actualDate = convertStringToDate(date);
+
+        Date startDate = addBusinessDays(actualDate, (-1) * daysBefore);
+        Date endDate = addBusinessDays(actualDate, 0);//5
+
+        for (Bond bond : bondsRepository.findAll()) {
+            if (bond.getBondMaturityDate().after(startDate) && bond.getBondMaturityDate().before(endDate)) {
+                bonds5BusinessDaysBeforeAndToday.add(bond);
+            }
+        }
+        List<String> isinList = new ArrayList<>();
+        for (Bond bond : bonds5BusinessDaysBeforeAndToday){
+            isinList.add(bond.getIsin());
+        }
+        return isinList;
+    }
+
+    @Override
+    public Bond getBondByIsin(String isin){
+        Bond bond = bondsRepository.findById(isin).orElse(null);
+        return bond;
+    }
+
+    @Override
     public ResponseEntity<String> triggerBondRedemption(String isin){
         Bond bond = bondsRepository.findById(isin).orElse(null);
         if (bond == null) {

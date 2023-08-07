@@ -76,6 +76,20 @@ public class BondsController {
         return bondService.triggerBondRedemption(isin);
     }
 
+    @GetMapping(value = {"/bonds/urgent/dates/{date}/{daysBefore}/{daysAfter}"})
+    public List<String> getIsinsOfUrgentUnredeemedBonds(@PathVariable(value = "date") String date,
+                                                                                             @PathVariable(value = "daysBefore") int daysBefore,
+                                                                                             @PathVariable(value = "daysAfter") int daysAfter) throws ParseException {
+        return bondService.getIsinsOfUrgentUnredeemedBonds(date, daysBefore, daysAfter);
+    }
+
+    @GetMapping(value = {"/bonds/getbyisin/{isin}"})
+    public Bond getBondByIsin(@PathVariable("isin") String isin){
+        return bondService.getBondByIsin(isin);
+    }
+
+
+
 
 //    @PostMapping("/dogs")
 //    public Dog createDog(@Valid @RequestBody Dog dog) {
