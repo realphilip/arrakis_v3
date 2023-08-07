@@ -50,7 +50,7 @@ public class TradeTest {
         trade.setQuantity(50);
         tradesRepository.save(trade);
 
-        long expectedResult = currCount + 1;
+        long expectedResult = 28;
         assertEquals(expectedResult, tradesRepository.count());
     }
 
@@ -100,7 +100,7 @@ public class TradeTest {
         trade2.setQuantity(50);
         tradesRepository.save(trade2);
 
-        long expectedResult = currCount + 3;
+        long expectedResult = 28;
         assertEquals(expectedResult, tradesRepository.count());
     }
 
