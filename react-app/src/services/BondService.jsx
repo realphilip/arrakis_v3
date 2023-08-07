@@ -32,18 +32,25 @@ export const getAllBondsForBusinessDaysBeforeAndAfter = async (date) => {
   try {
     const response = await HttpService.get(`/bonds/dates/${date}/${daysBefore}/${daysAfter}`);
     const bonds = response.data;
-    // const bonds = new Promise((resolve, reject) => {
-    //   // Simulating an asynchronous operation (e.g., fetching data from an API)
-    //   setTimeout(() => {
-    //     resolve(data); // Resolving the promise with an array of values
-    //   }, 100);
-    // })
     return bonds;
   } catch (error) {
     console.error("Error fetching bonds:", error);
     throw error;
   }
 };
+
+export const getMyBonds = async (userId, date) => {
+  const daysBefore = 5;
+  const daysAfter = 5;
+  try {
+    const response = await HttpService.get(`/bonds/dates/${date}/${daysBefore}/${daysAfter}`);
+    const bonds = response.data;
+    return bonds;
+  } catch (error) {
+    console.error("Error fetching bonds:", error);
+    throw error;
+  }
+}
 
 export const getMaturedBondsByBondTypeAndDate = async (bondType, date) => {
   try {
@@ -91,3 +98,12 @@ export const getStatsByBondHolderID = async (bondHolderId) => {
   }
 };
 
+export const triggerBondRedemption = async (isin) => {
+  try {
+    const response = await HttpService.patch(`/bonds/redemption/${isin}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error triggering bond redemption:", error);
+    throw error;
+  }
+};
