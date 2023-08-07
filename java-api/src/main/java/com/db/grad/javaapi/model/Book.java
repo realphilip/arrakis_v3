@@ -10,7 +10,7 @@ public class Book {
 
     @Id
     @Column(name = "id", nullable = false)
-    private String id;
+    private int id;
 
     @Column(name = "book_name", nullable = false)
     private String bookName;
@@ -18,11 +18,11 @@ public class Book {
     @ManyToMany(mappedBy = "books")
     private Set<User> users = new HashSet<>();
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
