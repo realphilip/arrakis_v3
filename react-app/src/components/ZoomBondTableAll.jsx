@@ -9,9 +9,22 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
-import { getIssuerNameByID } from '../services/BondService';
+import { getIssuerNameByID, triggerBondRedemption } from '../services/BondService';
 import { useLocation } from 'react-router';
 import { getAllBonds } from '../services/BondService';
+import Button from '@mui/material/Button';
+import Stack from '@mui/material/Stack';
+
+
+const handleRedemption = async (isin, refreshTable) => {
+  try {
+    const redemptionResult = await triggerBondRedemption(isin);
+    console.log("Redemption result:", redemptionResult);
+    refreshTable();
+  } catch (error) {
+    console.error("Error triggering bond redemption:", error);
+  }
+};
 
 const columns = [
     { id: 'isin', label: 'ISIN', minWidth: 170 },
@@ -59,6 +72,23 @@ const columns = [
       format: (value) => value.toFixed(2),
     },
     {
+      id: 'redemption',
+      label: 'Redemption',
+      minWidth: 170,
+      align: 'center',
+      format: (value, row, refreshTable) => (
+        <Stack direction="row" spacing={2}>
+          <Button
+            variant="contained"
+            onClick={() => handleRedemption(row.isin, refreshTable)}
+            disabled={row.status !== 'active'}
+          >
+            Redemption
+          </Button>
+        </Stack>
+      ),
+    },
+    {
       id: 'cusip',
       label: 'CUSIP',
       minWidth: 170,
@@ -98,6 +128,16 @@ const ZoomBondTableAll = ({ onRowClick }) => {
       console.error('Error fetching issuer name:', error);
     }
   };
+
+  const handleRefreshTable = async () => {
+    try {
+      const updatedBonds = await getAllBonds();
+      setRows(updatedBonds);
+    } catch (error) {
+      console.error('Error fetching updated bonds:', error);
+    }
+  };
+
 
   const handleIssuerIDHover = (id) => {
     fetchIssuerNameByID(id);
@@ -160,6 +200,9 @@ const ZoomBondTableAll = ({ onRowClick }) => {
                               >
                                 <span style={{ fontSize: '16px' }}>{value}</span>
                               </Tooltip>
+                            ) : column.id === 'redemption' ? (
+                              // Pass the refreshTable function to the Redemption button
+                              column.format(value, row, handleRefreshTable)
                             ) : (
                               column.format && typeof value === 'number'
                                 ? column.format(value)

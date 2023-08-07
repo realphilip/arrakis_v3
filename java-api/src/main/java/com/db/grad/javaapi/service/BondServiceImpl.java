@@ -45,8 +45,8 @@ public class BondServiceImpl implements BondService {
         if (bond == null) {
             return ResponseEntity.notFound().build();
         }
-        bondsRepository.save(bond);
         bond.setStatus("redeemed");
+        bondsRepository.save(bond);
         return ResponseEntity.ok("Bond redemption triggered.");
     }
 

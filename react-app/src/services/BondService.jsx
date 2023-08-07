@@ -91,3 +91,12 @@ export const getStatsByBondHolderID = async (bondHolderId) => {
   }
 };
 
+export const triggerBondRedemption = async (isin) => {
+  try {
+    const response = await HttpService.patch(`/bonds/redemption/${isin}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error triggering bond redemption:", error);
+    throw error;
+  }
+};

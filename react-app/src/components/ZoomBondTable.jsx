@@ -7,12 +7,23 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
-import { getMaturedBondsByBondTypeAndDate, getIssuerNameByID  } from '../services/BondService';
+import { getMaturedBondsByBondTypeAndDate, getIssuerNameByID, triggerBondRedemption  } from '../services/BondService';
 import { useLocation } from 'react-router';
 import BondCardTable from './BondCardTable';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import Stack from '@mui/material/Stack';
 
+const handleRedemption = async (isin, refreshTable) => {
+  try {
+    const redemptionResult = await triggerBondRedemption(isin);
+    console.log("Redemption result:", redemptionResult);
+    refreshTable();
+  } catch (error) {
+    console.error("Error triggering bond redemption:", error);
+  }
+};
 
 const columns = [
   { id: 'isin', label: 'ISIN', minWidth: 170 },
@@ -60,6 +71,23 @@ const columns = [
     format: (value) => value.toFixed(2),
   },
   {
+    id: 'redemption',
+    label: 'Redemption',
+    minWidth: 170,
+    align: 'center',
+    format: (value, row, refreshTable) => (
+      <Stack direction="row" spacing={2}>
+        <Button
+          variant="contained"
+          onClick={() => handleRedemption(row.isin, refreshTable)}
+          disabled={row.status !== 'active'}
+        >
+          Redemption
+        </Button>
+      </Stack>
+    ),
+  },
+  {
     id: 'cusip',
     label: 'CUSIP',
     minWidth: 170,
@@ -95,6 +123,15 @@ export default function StickyHeadTable({onRowClick}) {
     fetchData();
   }, [bondType, bondDate]);
 
+  const handleRefreshTable = async () => {
+    try {
+      const updatedBonds = await getMaturedBondsByBondTypeAndDate(bondType, bondDate);
+      setRows(updatedBonds);
+    } catch (error) {
+      console.error('Error fetching updated bonds:', error);
+    }
+  };
+
   const fetchIssuerNameByID = async (id) => {
     try {
       const name = await getIssuerNameByID(id);
@@ -103,6 +140,7 @@ export default function StickyHeadTable({onRowClick}) {
       console.error('Error fetching issuer name:', error);
     }
   };
+
 
   const handleIssuerIDHover = (id) => {
     fetchIssuerNameByID(id);
@@ -116,6 +154,8 @@ export default function StickyHeadTable({onRowClick}) {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
+
+
 
   return (
     <div style={{ width: '100%' }}>
@@ -137,46 +177,46 @@ export default function StickyHeadTable({onRowClick}) {
               </TableRow>
             </TableHead>
             <TableBody>
-                {rows
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row) => {
-                    return (
-                      <TableRow
-                        hover
-                        role="checkbox"
-                        tabIndex={-1}
-                        key={row.isin}
-                        onMouseEnter={() => handleIssuerIDHover(row.issuerID)}
-                        onMouseLeave={() => setIssuerName('')}
-                        // Add onClick handler for each row
-                        onClick={() => onRowClick(row.isin)}
-                      >
-                        {columns.map((column) => {
-                          const value = row[column.id];
-                          return (
-                            <TableCell key={column.id} align={column.align}>
-                              {column.id === 'issuerID' ? (
-                                <Tooltip
-                                  title={
-                                    <Typography variant="subtitle1">
-                                      {issuerName}
-                                    </Typography>
-                                  }
-                                >
-                                  <span style={{ fontSize: '16px' }}>{value}</span>
-                                </Tooltip>
-                              ) : (
-                                column.format && typeof value === 'number'
-                                  ? column.format(value)
-                                  : value
-                              )}
-                            </TableCell>
-                          );
-                        })}
-                      </TableRow>
-                    );
-                  })}
-              </TableBody>
+              {rows
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((row) => {
+                  return (
+                    <TableRow
+                      hover
+                      role="checkbox"
+                      tabIndex={-1}
+                      key={row.isin}
+                      onMouseEnter={() => handleIssuerIDHover(row.issuerID)}
+                      onMouseLeave={() => setIssuerName('')}
+                      onClick={() => onRowClick(row.isin)}
+                    >
+                      {columns.map((column) => {
+                        const value = row[column.id];
+                        return (
+                          <TableCell key={column.id} align={column.align}>
+                            {column.id === 'issuerID' ? (
+                              <Tooltip
+                                title={
+                                  <Typography variant="subtitle1">{issuerName}</Typography>
+                                }
+                              >
+                                <span style={{ fontSize: '16px' }}>{value}</span>
+                              </Tooltip>
+                            ) : column.id === 'redemption' ? (
+                              // Pass the refreshTable function to the Redemption button
+                              column.format(value, row, handleRefreshTable)
+                            ) : (
+                              column.format && typeof value === 'number'
+                                ? column.format(value)
+                                : value
+                            )}
+                          </TableCell>
+                        );
+                      })}
+                    </TableRow>
+                  );
+                })}
+            </TableBody>
           </Table>
         </TableContainer>
         <TablePagination
