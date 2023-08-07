@@ -23,8 +23,8 @@ export default function BondCardTable({ bond, date }) {
   const [sortColumn, setSortColumn] = useState('name');
 
   const showBonds = (type) => {
-    console.log(type);
-    console.log(date);
+    
+    
     navigate("/home/zoombond", { state: { type, date } });
   };
 

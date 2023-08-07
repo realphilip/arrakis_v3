@@ -15,8 +15,8 @@ function Login() {
     
   useEffect(()=> {
     localStorage.setItem('jwtToken', null);
-    console.log('jwttoken')
-    console.log(localStorage.getItem('jwtToken'))
+    
+    
     if(localStorage.getItem('authenticated')=='true') {
       
       navigate("/home/bonds");
@@ -32,7 +32,7 @@ function Login() {
            
             const jwtToken = await SignIn(username, password);
             if(localStorage.getItem('authenticated')=='true') {
-              console.log(localStorage.getItem('jwtToken'))
+              
               navigate("/home/bonds");
             }
             // onLogin(user.username);

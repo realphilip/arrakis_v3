@@ -19,7 +19,7 @@ import Stack from '@mui/material/Stack';
 const handleRedemption = async (isin, refreshTable) => {
   try {
     const redemptionResult = await triggerBondRedemption(isin);
-    console.log("Redemption result:", redemptionResult);
+    
     refreshTable();
   } catch (error) {
     console.error("Error triggering bond redemption:", error);

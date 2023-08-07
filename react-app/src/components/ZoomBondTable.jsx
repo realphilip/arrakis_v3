@@ -18,7 +18,7 @@ import Stack from '@mui/material/Stack';
 const handleRedemption = async (isin, refreshTable) => {
   try {
     const redemptionResult = await triggerBondRedemption(isin);
-    console.log("Redemption result:", redemptionResult);
+    
     refreshTable();
   } catch (error) {
     console.error("Error triggering bond redemption:", error);
@@ -106,8 +106,8 @@ export default function StickyHeadTable({onRowClick}) {
   const [issuerName, setIssuerName] = React.useState('');
 
   React.useEffect(( ) => {
-    console.log(bondType);
-    console.log(bondDate); 
+    
+    
     const fetchData = async () => {
       try {
         if (bondType) {

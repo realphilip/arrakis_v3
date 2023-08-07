@@ -37,7 +37,7 @@ export default function Home() {
     setDate(date)
   }
   const onClickSidebarOption = (data) => {
-    console.log(data);
+    
     if (data === 'All Bonds Table') {
       navigate("/home/allbond");
     } else {
@@ -46,7 +46,7 @@ export default function Home() {
   };
 
   const logOut = () => {
-    console.log('logout');
+    
     localStorage.setItem('authenticated', 'false');
     navigate("/login");
   }
