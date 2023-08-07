@@ -85,7 +85,7 @@ export default function Home() {
   }
   const onClickSidebarOption = (data) => {
     console.log(data);
-    if (data === 'All Bonds') {
+    if (data === 'Bonds & Trades') {
       navigate("/home/allbond");
     } else {
       navigate("/home/bonds");
@@ -107,6 +107,7 @@ export default function Home() {
   const logOut = () => {
     
     localStorage.setItem('authenticated', 'false');
+    localStorage.setItem('jwtToken', null);
     navigate("/login");
   }
 
@@ -232,7 +233,7 @@ export default function Home() {
         <Toolbar />
         <Box sx={{ overflow: 'auto' }}>
           <List>
-            {['Bonds', 'All Bonds'].map((text, index) => (
+            {['Bonds', 'Bonds & Trades'].map((text, index) => (
               
               <ListItem key={text} disablePadding  onClick={()=> {onClickSidebarOption(text)}}>
                 <ListItemButton>

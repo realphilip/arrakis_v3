@@ -6,6 +6,7 @@ import DB from '../images/DB4.png';
 import { TextField, Button, Typography, Container, Grid, Link } from '@mui/material';
 import { SignIn } from '../services/LoginService';
 import { useNavigate } from 'react-router-dom';
+import { getJwtToken, setJwtToken } from '../services/BondService';
 
 function Login() {
   const [username, setUsername] = useState('');
@@ -14,9 +15,7 @@ function Login() {
   const navigate = useNavigate();
     
   useEffect(()=> {
-    localStorage.setItem('jwtToken', null);
-    
-    
+    console.log(localStorage.getItem('jwtToken'))
     if(localStorage.getItem('authenticated')=='true') {
       
       navigate("/home/bonds");
@@ -29,14 +28,19 @@ function Login() {
         // For simplicity, let's just call the onLogin callback
         try {
             // const user = await loginUser(username, password);
+            let jwtToken = await SignIn(username, password);
            
-            const jwtToken = await SignIn(username, password);
+           
+            console.log(getJwtToken(jwtToken))
             if(localStorage.getItem('authenticated')=='true') {
-              
+              jwtToken = localStorage.getItem('jwtToken')
+              setJwtToken(jwtToken)
+              console.log(localStorage.getItem('jwtToken'))
               navigate("/home/bonds");
             }
             // onLogin(user.username);
           } catch (error) {
+            console.log(error);
             setErrors({ login: 'Invalid username or password' });
           }
       }

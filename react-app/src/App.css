@@ -60,17 +60,13 @@
 .row {
    display: flex;
     flex-wrap: wrap;
-    justify-content: center;
+   
 }
 
 
 .container{
-
   padding: 15px;
-
-  flex: 1 1 150px; 
-    
-    
+  flex: 0 0 150px; 
 }
 
 .navbar {

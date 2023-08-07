@@ -17,7 +17,7 @@ import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import { purple } from '@mui/material/colors';
 import {white } from '@mui/material/colors';
-
+import { setJwtToken } from '../services/BondService';
 const BootstrapButton = styled(Button)({
   boxShadow: 'none',
   textTransform: 'none',
@@ -73,6 +73,7 @@ function Bonds() {
       setShowMyBonds(false);
     }
     const getBonds = ()=> {
+
       getAllBonds().then((data) => {
           
       })
@@ -108,8 +109,9 @@ function Bonds() {
     useEffect(() => {
         try {
             if (localStorage.getItem('authenticated')=='true'){
-              console.log(showMybonds);
-              console.log(showAllbonds); 
+              const jwtToken = localStorage.getItem('jwtToken')
+              setJwtToken(jwtToken)
+              console.log(jwtToken);
               if(!showMybonds) {
                 getBondsByDate();
               }
@@ -123,7 +125,7 @@ function Bonds() {
             console.error("Error fetching bonds:", error);
         }
 
-    }, [currentDate, localStorage.getItem('authenticated')]);
+    }, [currentDate]);
 
     const formatDate = (date) => {
       const d = dayjs(date,'DD-MM-YYYY').format('DD-MM-YYYY');
@@ -140,7 +142,7 @@ function Bonds() {
             <ColorButton variant="contained" style={{ margin: "0 10px"}} onClick={getMyBonds} disabled={showMybonds}>My Bonds</ColorButton>
           </Row>
   
-          {bonds &&<Row className="row">
+          {bonds &&<Row className="row" style={{width: '85vw'}}>
         
               {Object.entries(bonds).map(([date, values, index]) => (
                 <div className="container" key={date}>
