@@ -41,7 +41,7 @@ export default function Home() {
     if (data === 'All Bonds Table') {
       navigate("/home/allbond");
     } else {
-      navigate("/home/" + data);
+      navigate("/home/bonds");
     }
   };
 
