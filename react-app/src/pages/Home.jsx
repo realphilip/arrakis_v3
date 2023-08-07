@@ -1,5 +1,4 @@
 import * as React from 'react';
-
 import Drawer from '@mui/material/Drawer';
 import AppBar from '@mui/material/AppBar';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -34,8 +33,13 @@ import { deepOrange, deepPurple } from '@mui/material/colors';
 import { getUserData } from '../services/BondService';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
-
-
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import { useState } from 'react';
+import {getIsinsOfUrgentUnredeemedBonds} from '../services/BondService'
+import format from 'date-fns/format';
+import { maxWidth } from '@mui/system';
+import Badge from '@mui/material/Badge';
+import BondDialogBox from '../components/BondDialogBox';
 
 const drawerWidth = 160;
 
@@ -87,6 +91,18 @@ export default function Home() {
       navigate("/home/bonds");
     }
   };
+  const [showBondDialog, setShowBondDialog] = useState(false);
+  const [selectedIsin, setSelectedIsin] = useState('');
+  const [urgentIsins, setUrgentIsins] = useState([]);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const handleNotificationsClick = () => {
+    setShowNotifications(!showNotifications);
+  };
+
+  const handleIsinClick = (isin) => {
+    setSelectedIsin(isin);
+    setShowBondDialog(true);
+  };
 
   const logOut = () => {
     
@@ -105,6 +121,50 @@ export default function Home() {
       console.log('error getting user data');
     })
   })
+
+  useEffect(() => {
+    let newDate = new Date(date);
+    newDate = format(newDate, 'dd-MM-yyyy');
+    getIsinsOfUrgentUnredeemedBonds(newDate)
+      .then((isin) => {
+        setUrgentIsins(isin);
+      })
+      .catch((error) => {
+        console.error('Error fetching urgent unredeemed bonds:', error);
+      });
+  }, [date]);
+
+  const generateNotificationMessage = (isin) => {
+    const count = isin.length;
+    if (count === 0) {
+      return 'No urgent bond redemptions for the selected date.';
+    }
+    const ids = isin.map((id) => (
+      <span
+        key={id}
+        style={{ color: 'red', cursor: 'pointer' }}
+        onClick={() => handleIsinClick(id)}
+      >
+        {id}
+      </span>
+    ));
+    const idsWithNewLine = ids.reduce((acc, id) => (
+      <>
+        {acc}
+        <br /> 
+        {id}
+      </>
+    ));
+  
+    return (
+      <div style={{ textAlign: 'justify' }}>
+        {`You have `}
+        <span style={{ color: 'red' }}>{count}</span>
+        {` bond${count > 1 ? 's' : ''} with urgent redemption coming through that are past or at their expiration date! \n\nISIN:\n\ `}
+        {idsWithNewLine}
+      </div>
+    );
+  };
   
 
   return (
@@ -122,7 +182,7 @@ export default function Home() {
             alt="Your logo."
             src={DB}
         />
-        
+         
         <div style={{color: 'white', fontSize: 25, fontWeight:700}} >Bond Brigade</div>
 
         <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
@@ -147,6 +207,11 @@ export default function Home() {
           <Avatar style={{ backgroundColor:'green'}}>{capitalizeFirstLetter(user[0])}</Avatar>
        </IconButton>
        </Tooltip>
+       <IconButton>
+          <Badge badgeContent={urgentIsins.length} color="error">
+            <NotificationsIcon style={{ cursor: 'pointer', marginRight: '10px', marginLeft: '10px', color: '#fff' }} onClick={handleNotificationsClick} />
+          </Badge>
+        </IconButton>
         <LogoutIcon style={{cursor:'pointer', marginLeft: '15', marginRight: '7'}} onClick={logOut}/>
         </div>
         
@@ -184,7 +249,25 @@ export default function Home() {
       <Outlet context={[date]}/>
       
     </Box>
-    
+    <Drawer
+        anchor="right"
+        open={showNotifications}
+        onClose={() => setShowNotifications(false)}
+      >
+        <div style={{ padding: '90px', maxWidth: '370px' }}>
+          <Typography variant="h6" style={{ marginBottom: '16px' }}>
+            Urgent Redemptions
+          </Typography>
+          <Typography style={{ whiteSpace: 'pre-line' }}>
+            {generateNotificationMessage(urgentIsins)}
+          </Typography>
+        </div>
+    </Drawer>
+    <BondDialogBox
+      open={showBondDialog}
+      handleClose={() => setShowBondDialog(false)}
+      isin={selectedIsin}
+    />
   </>
   );
 }

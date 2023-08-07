@@ -132,3 +132,14 @@ export const getIsinsOfUrgentUnredeemedBonds = async (date) => {
     throw error;
   }
 };
+
+export const getBondByIsin = async (isin) => {
+  try {
+    const response = await HttpService.get(`${hostNameUrl}/bonds/getbyisin/${isin}`);
+    const bond = response.data;
+    return bond;
+  } catch (error) {
+    console.error("Error fetching bond by ISIN:", error);
+    throw error;
+  }
+};
