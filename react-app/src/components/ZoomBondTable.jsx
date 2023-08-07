@@ -18,7 +18,7 @@ import Stack from '@mui/material/Stack';
 const handleRedemption = async (isin, refreshTable) => {
   try {
     const redemptionResult = await triggerBondRedemption(isin);
-    console.log("Redemption result:", redemptionResult);
+    
     refreshTable();
   } catch (error) {
     console.error("Error triggering bond redemption:", error);
@@ -26,6 +26,21 @@ const handleRedemption = async (isin, refreshTable) => {
 };
 
 const columns = [
+  {
+    id: 'redemption',
+    label: 'Redeem',
+    minWidth: 170,
+    align: 'center',
+    format: (value, row, refreshTable) => (
+      <Button
+          variant="contained"
+          onClick={() => handleRedemption(row.isin, refreshTable)}
+          disabled={row.status !== 'active'}
+        >
+          Redeem
+        </Button>
+    ),
+  },
   { id: 'isin', label: 'ISIN', minWidth: 170 },
   { id: 'type', label: 'Type', minWidth: 100 },
   {
@@ -71,21 +86,6 @@ const columns = [
     format: (value) => value.toFixed(2),
   },
   {
-    id: 'redemption',
-    label: 'Redeem',
-    minWidth: 170,
-    align: 'center',
-    format: (value, row, refreshTable) => (
-      <Button
-          variant="contained"
-          onClick={() => handleRedemption(row.isin, refreshTable)}
-          disabled={row.status !== 'active'}
-        >
-          Redeem
-        </Button>
-    ),
-  },
-  {
     id: 'cusip',
     label: 'CUSIP',
     minWidth: 170,
@@ -106,8 +106,8 @@ export default function StickyHeadTable({onRowClick}) {
   const [issuerName, setIssuerName] = React.useState('');
 
   React.useEffect(( ) => {
-    console.log(bondType);
-    console.log(bondDate); 
+    
+    
     const fetchData = async () => {
       try {
         if (bondType) {

@@ -37,22 +37,22 @@ const ZoomBondAll = () => {
       <Toolbar />
       <Row className="row">
         <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <Card>
-              <CardHeader title="BOND TABLE" />
-              <CardContent>
-                <TableContainer component={Paper} sx={{ overflowX: 'auto' }}>
+          <Grid item xs={12} md={6}>
+            <Card className="card">
+              <CardHeader className="cardHeader" title="BOND TABLE" />
+              <CardContent className="cardContent">
+                <TableContainer component={Paper}>
                   {/* Pass onRowClick prop to ZoomBondTable */}
                   <ZoomBondTableAll onRowClick={handleRowClick} />
                 </TableContainer>
               </CardContent>
             </Card>
           </Grid>
-          <Grid item xs={12}>
-            <Card>
-              <CardHeader title="TRADE TABLE" />
-              <CardContent>
-                <TableContainer component={Paper} sx={{ overflowX: 'auto' }}>
+          <Grid item xs={12} md={6}>
+            <Card className="card">
+              <CardHeader className="cardHeader" title="TRADE TABLE" />
+              <CardContent className="cardContent">
+                <TableContainer component={Paper}>
                   {/* Pass isin prop to ZoomTradeTable */}
                   <ZoomTradeTable isin={selectedISIN} />
                 </TableContainer>

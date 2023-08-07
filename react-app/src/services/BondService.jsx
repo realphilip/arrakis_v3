@@ -39,11 +39,11 @@ export const getAllBondsForBusinessDaysBeforeAndAfter = async (date) => {
   }
 };
 
-export const getMyBonds = async (userId, date) => {
+export const getMyBondsData = async (date) => {
   const daysBefore = 5;
   const daysAfter = 5;
   try {
-    const response = await HttpService.get(`/bonds/dates/${date}/${daysBefore}/${daysAfter}`);
+    const response = await HttpService.get(`/bonds/email/dates/${date}/${daysBefore}/${daysAfter}`);
     const bonds = response.data;
     return bonds;
   } catch (error) {
