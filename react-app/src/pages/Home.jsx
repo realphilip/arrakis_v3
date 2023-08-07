@@ -12,6 +12,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
+import DescriptionIcon from '@mui/icons-material/Description';
 import MailIcon from '@mui/icons-material/Mail';
 import Bonds from './Bonds';
 import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from "react-router-dom";
@@ -37,8 +38,8 @@ export default function Home() {
     setDate(date)
   }
   const onClickSidebarOption = (data) => {
-    
-    if (data === 'All Bonds Table') {
+    console.log(data);
+    if (data === 'All Bonds') {
       navigate("/home/allbond");
     } else {
       navigate("/home/bonds");
@@ -105,12 +106,12 @@ export default function Home() {
         <Toolbar />
         <Box sx={{ overflow: 'auto' }}>
           <List>
-            {['Bonds', 'All Bonds Table'].map((text, index) => (
+            {['Bonds', 'All Bonds'].map((text, index) => (
               
               <ListItem key={text} disablePadding  onClick={()=> {onClickSidebarOption(text)}}>
                 <ListItemButton>
                   <ListItemIcon>
-                    {index % 2 === 0 ? <AccountBalanceWalletIcon /> : <AccountBalanceWalletIcon />}
+                     {index === 0 ? <AccountBalanceWalletIcon /> : index === 1 ? <DescriptionIcon /> : null}
                   </ListItemIcon>
                   <ListItemText primary={text} />
                 </ListItemButton>

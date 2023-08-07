@@ -23,6 +23,11 @@ public interface BondService {
 
     ResponseEntity<String> triggerBondRedemption(String isin);
 
+    List<String> getIsinsOfUrgentUnredeemedBonds(String date,int daysBefore, int daysAfter) throws ParseException;
+
+    Bond getBondByIsin(String isin);
+
+
 
 //    Bond getBondByDate(Date date);
 //
