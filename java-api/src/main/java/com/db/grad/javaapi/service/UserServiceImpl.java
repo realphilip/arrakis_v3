@@ -36,6 +36,15 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    public String getEmailFromToken(String token) {
+        return Jwts.parser()
+                .setSigningKey(secret)
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
+    }
+
+
     private String generateToken(User user) {
         Map<String, Object> claims = new HashMap<>();
         return Jwts.builder()

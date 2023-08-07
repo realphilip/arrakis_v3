@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -43,10 +44,36 @@ public class BondsController {
         return bondService.getAllBondsForBusinessDaysBeforeAndAfter(date, daysBefore, daysAfter);
     }
 
+
+
     @GetMapping(value = {"/bonds/bondType/{bondType}/date/{date}"})
     public List<Bond> getMaturedBondsByBondTypeAndDate(@PathVariable(value = "bondType") String bondType, @PathVariable(value = "date") String date) throws ParseException {
 
         return bondService.getAllMatureBondsByBondTypeAndDate(bondType, date);
+    }
+
+    @GetMapping(value = {"/bonds/dates/{date}/{daysBefore}/{daysAfter}"})
+    public Map<String, Map<String, Integer>> getNoOfBondsForBusinessDaysBeforeAndAfterOfTypeOfEmail(HttpServletRequest request,
+                                                                                                    @PathVariable(value = "date") String date,
+                                                                                                    @PathVariable(value = "daysBefore") int daysBefore,
+                                                                                                    @PathVariable(value = "daysAfter") int daysAfter) throws ParseException {
+        String token = request.getHeader("Authorization").substring(7);
+        String email = userService.getEmailFromToken(token);
+        return bondService.getAllBondsForBusinessDaysBeforeAndAfterOfEmail(date, daysBefore, daysAfter, email);
+    }
+
+    @GetMapping(value = {"/bonds/bondType/{bondType}/date/{date}"})
+    public List<Bond> getMaturedBondsByBondTypeAndDateOfEmail(HttpServletRequest request,
+                                                              @PathVariable(value = "bondType") String bondType,
+                                                              @PathVariable(value = "date") String date) throws ParseException {
+        String token = request.getHeader("Authorization").substring(7);
+        String email = userService.getEmailFromToken(token);
+        return bondService.getAllMatureBondsByBondTypeAndDateOfEmail(bondType, date, email);
+    }
+
+    @PatchMapping("/bonds/{isin}")
+    public ResponseEntity<String> triggerBondRedemption(@PathVariable("isin") String isin){
+        return bondService.triggerBondRedemption(isin);
     }
 
 
