@@ -72,19 +72,17 @@ const columns = [
   },
   {
     id: 'redemption',
-    label: 'Redemption',
+    label: 'Redeem',
     minWidth: 170,
     align: 'center',
     format: (value, row, refreshTable) => (
-      <Stack direction="row" spacing={2}>
-        <Button
+      <Button
           variant="contained"
           onClick={() => handleRedemption(row.isin, refreshTable)}
           disabled={row.status !== 'active'}
         >
-          Redemption
+          Redeem
         </Button>
-      </Stack>
     ),
   },
   {
