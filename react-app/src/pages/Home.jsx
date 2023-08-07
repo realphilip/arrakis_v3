@@ -39,7 +39,7 @@ export default function Home() {
   }
   const onClickSidebarOption = (data) => {
     console.log(data);
-    if (data === 'All Bonds Table') {
+    if (data === 'All Bonds') {
       navigate("/home/allbond");
     } else {
       navigate("/home/bonds");
