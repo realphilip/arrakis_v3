@@ -9,6 +9,7 @@ import com.db.grad.javaapi.repository.TradesRepository;
 import com.db.grad.javaapi.repository.UsersRepository;
 import com.db.grad.javaapi.service.model.MaturingBondType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
@@ -36,6 +37,17 @@ public class BondServiceImpl implements BondService {
     @Override
     public List<Bond> getAllBonds() {
         return bondsRepository.findAll();
+    }
+
+    @Override
+    public ResponseEntity<String> triggerBondRedemption(String isin){
+        Bond bond = bondsRepository.findById(isin).orElse(null);
+        if (bond == null) {
+            return ResponseEntity.notFound().build();
+        }
+        bondsRepository.save(bond);
+        bond.setStatus("redeemed");
+        return ResponseEntity.ok("Bond redemption triggered.");
     }
 
     @Override

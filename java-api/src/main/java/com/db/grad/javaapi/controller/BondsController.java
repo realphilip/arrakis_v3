@@ -71,6 +71,11 @@ public class BondsController {
         return bondService.getAllMatureBondsByBondTypeAndDateOfEmail(bondType, date, email);
     }
 
+    @PatchMapping("/bonds/{isin}")
+    public ResponseEntity<String> triggerBondRedemption(@PathVariable("isin") String isin){
+        return bondService.triggerBondRedemption(isin);
+    }
+
 
 //    @PostMapping("/dogs")
 //    public Dog createDog(@Valid @RequestBody Dog dog) {
