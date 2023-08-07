@@ -58,8 +58,9 @@ public class BondServiceImpl implements BondService {
 
         Date startDate = addBusinessDays(actualDate, (-1) * daysBefore);//-5
         Date endDate = addBusinessDays(actualDate, daysAfter);//5
-        List<String> emailsAssignedToBond = new ArrayList<>();
+
         for (Bond bond : bondsRepository.findAll()) {
+            List<String> emailsAssignedToBond = new ArrayList<>(); // Move this line here
             for (Trade trade : tradeService.getAllTradesByISIN(bond.getIsin())){
                 for(User user : booksRepository.getReferenceById(trade.getBookId()).getUsers()){
                     emailsAssignedToBond.add(user.getEmail());
@@ -82,13 +83,14 @@ public class BondServiceImpl implements BondService {
         return maturityDateMap;
     }
 
+
     @Override
     public List<Bond> getAllMatureBondsByBondTypeAndDateOfEmail(String bondType, String stringDate, String email) throws ParseException {
         List<Bond> maturingBondsByBondTypeAndDate = new ArrayList<>();
         Date date = convertStringToDate(stringDate);
-        List<String> emailsAssignedToBond = new ArrayList<>();
 
         for (Bond bond : getAllBonds()) {
+            List<String> emailsAssignedToBond = new ArrayList<>(); // Move this line here
             for (Trade trade : tradeService.getAllTradesByISIN(bond.getIsin())){
                 for(User user : booksRepository.getReferenceById(trade.getBookId()).getUsers()){
                     emailsAssignedToBond.add(user.getEmail());
@@ -102,6 +104,7 @@ public class BondServiceImpl implements BondService {
         }
         return maturingBondsByBondTypeAndDate;
     }
+
 
 
 
