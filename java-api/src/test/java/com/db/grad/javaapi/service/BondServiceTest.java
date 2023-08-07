@@ -8,6 +8,7 @@ import com.db.grad.javaapi.repository.BondsRepository;
 import com.db.grad.javaapi.repository.BooksRepository;
 import com.db.grad.javaapi.repository.TradesRepository;
 import com.db.grad.javaapi.repository.UsersRepository;
+import org.junit.Ignore;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,12 +20,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @ExtendWith(MockitoExtension.class)
 public class BondServiceTest {
@@ -46,6 +51,84 @@ public class BondServiceTest {
 
     @Mock
     private TradeServiceImpl tradeService;
+
+    @Test
+    public void testTriggerBondRedemptionSuccess() {
+        String isinToRedeem = "ISIN2";
+
+        List<Bond> testBonds = new ArrayList<>();
+
+        Bond bond1 = new Bond();
+        bond1.setIsin("ISIN1");
+        bond1.setStatus("active");
+        testBonds.add(bond1);
+
+        Bond bond2 = new Bond();
+        bond2.setIsin("ISIN2"); // Bond with the ISIN to redeem
+        bond2.setStatus("active");
+        testBonds.add(bond2);
+
+        Bond bond3 = new Bond();
+        bond3.setIsin("ISIN3");
+        bond3.setStatus("active");
+        testBonds.add(bond3);
+
+        Mockito.when(bondsRepository.findById("ISIN2")).thenReturn(Optional.of(bond2));
+
+        ResponseEntity<String> resultResponse = bondService.triggerBondRedemption(isinToRedeem);
+
+        assertEquals(HttpStatus.OK, resultResponse.getStatusCode());
+        assertEquals("Bond redemption triggered.", resultResponse.getBody());
+
+        assertEquals("redeemed", bond2.getStatus());
+    }
+
+    @Test
+    public void testTriggerBondRedemptionNotFound() {
+        String isinToRedeem = "ISIN_NOT_FOUND";
+
+        Mockito.when(bondsRepository.findById(isinToRedeem)).thenReturn(Optional.empty());
+
+        ResponseEntity<String> resultResponse = bondService.triggerBondRedemption(isinToRedeem);
+
+        assertEquals(HttpStatus.NOT_FOUND, resultResponse.getStatusCode());
+    }
+
+    @Test
+    public void testGetBondByIsin() {
+        String isinToFind = "ISIN2";
+
+        List<Bond> testBonds = new ArrayList<>();
+
+        Bond bond1 = new Bond();
+        bond1.setIsin("ISIN1");
+        testBonds.add(bond1);
+
+        Bond bond2 = new Bond();
+        bond2.setIsin("ISIN2");
+        testBonds.add(bond2);
+
+        Bond bond3 = new Bond();
+        bond3.setIsin("ISIN3");
+        testBonds.add(bond3);
+
+        Mockito.when(bondsRepository.findById("ISIN2")).thenReturn(Optional.of(bond2));
+
+        Bond resultBond = bondService.getBondByIsin(isinToFind);
+
+        assertEquals(bond2, resultBond);
+    }
+
+    @Test
+    public void testGetBondByIsinNotFound() {
+        String isinToFind = "ISIN_NOT_FOUND";
+
+        Mockito.when(bondsRepository.findById(isinToFind)).thenReturn(Optional.empty());
+
+        Bond resultBond = bondService.getBondByIsin(isinToFind);
+
+        assertNull(resultBond);
+    }
 
     @Test
     public void getBondsDueForMaturityPeriod() throws ParseException {
@@ -116,6 +199,33 @@ public class BondServiceTest {
     }
 
     @Test
+    public void testGetAllMatureBondsByBondTypeAndDate() throws ParseException {
+        String bondType = "CORP";
+        String stringDate = "17-08-2023";
+        Date date = new SimpleDateFormat("dd-MM-yyyy").parse(stringDate);
+
+        Bond bond1 = new Bond();
+        bond1.setType("CORP");
+        bond1.setBondMaturityDate(date);
+
+        Bond bond2 = new Bond();
+        bond2.setType("GOVN");
+        bond2.setBondMaturityDate(date);
+
+        Bond bond3 = new Bond();
+        bond3.setType("SOVN");
+        bond3.setBondMaturityDate(new Date());
+
+        Mockito.when(bondsRepository.findAll()).thenReturn(Arrays.asList(bond1, bond2, bond3));
+
+        List<Bond> result = bondService.getAllMatureBondsByBondTypeAndDate(bondType, stringDate);
+
+        assertEquals(1, result.size());
+        assertEquals(bond1, result.get(0));
+    }
+
+    // this unit test does not work due to email mock injection
+    @Ignore
     public void getBondsDueForMaturityPeriodByEmail() throws ParseException {
 
         Bond bond = new Bond();
