@@ -119,3 +119,16 @@ export const triggerBondRedemption = async (isin) => {
     throw error;
   }
 };
+
+export const getIsinsOfUrgentUnredeemedBonds = async (date) => {
+  try {
+    const daysBefore = 5;
+    const daysAfter = 5;
+    const response = await HttpService.get(`${hostNameUrl}/bonds/urgent/dates/${date}/${daysBefore}/${daysAfter}`);
+    const isins = response.data;
+    return isins;
+  } catch (error) {
+    console.error('Error fetching urgent unredeemed bonds:', error);
+    throw error;
+  }
+};
