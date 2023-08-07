@@ -32,37 +32,36 @@ const ZoomBond = () => {
     setSelectedISIN(isin);
   };
 
-  return (
-    <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-      <Toolbar />
-      <Row className="row">
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <Card>
-              <CardHeader title="BOND TABLE" />
-              <CardContent>
-                <TableContainer component={Paper} sx={{ overflowX: 'auto' }}>
-                  {/* Pass onRowClick prop to ZoomBondTable */}
-                  <ZoomBondTable onRowClick={handleRowClick} />
-                </TableContainer>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={12}>
-            <Card>
-              <CardHeader title="TRADE TABLE" />
-              <CardContent>
-                <TableContainer component={Paper} sx={{ overflowX: 'auto' }}>
-                  {/* Pass isin prop to ZoomTradeTable */}
-                  <ZoomTradeTable isin={selectedISIN} />
-                </TableContainer>
-              </CardContent>
-            </Card>
-          </Grid>
+return (
+  <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+    <Toolbar />
+    <div style={{maxWidth: '87vw'}}>
+        <Grid item xs={12} md={6}>
+          <Card className="card">
+            <CardHeader className="cardHeader" title="BOND TABLE" />
+            <CardContent className="cardContent">
+              <TableContainer >
+                {/* Pass onRowClick prop to ZoomBondTable */}
+                <ZoomBondTable onRowClick={handleRowClick} />
+              </TableContainer>
+            </CardContent>
+          </Card>
         </Grid>
-      </Row>
-    </Box>
-  );
+        <Grid item xs={12} md={6}>
+          <Card className="card">
+            <CardHeader className="cardHeader" title="TRADE TABLE" />
+            <CardContent className="cardContent">
+              <TableContainer>
+                {/* Pass isin prop to ZoomTradeTable */}
+                <ZoomTradeTable isin={selectedISIN} />
+              </TableContainer>
+            </CardContent>
+          </Card>
+        </Grid>
+     </div>
+  </Box>
+);
 };
+
 
 export default ZoomBond;

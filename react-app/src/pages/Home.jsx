@@ -1,5 +1,4 @@
 import * as React from 'react';
-
 import Drawer from '@mui/material/Drawer';
 import AppBar from '@mui/material/AppBar';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -12,6 +11,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
+import DescriptionIcon from '@mui/icons-material/Description';
 import MailIcon from '@mui/icons-material/Mail';
 import Bonds from './Bonds';
 import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from "react-router-dom";
@@ -27,27 +27,87 @@ import dayjs from "dayjs";
 import '../App.css';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useEffect } from 'react';
+import Avatar from '@mui/material/Avatar';
+import Tooltip from '@mui/material/Tooltip';
+import { deepOrange, deepPurple } from '@mui/material/colors';
+import { getUserData } from '../services/BondService';
+import DeleteIcon from '@mui/icons-material/Delete';
+import IconButton from '@mui/material/IconButton';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import { useState } from 'react';
+import {getIsinsOfUrgentUnredeemedBonds} from '../services/BondService'
+import format from 'date-fns/format';
+import { maxWidth } from '@mui/system';
+import Badge from '@mui/material/Badge';
+import BondDialogBox from '../components/BondDialogBox';
+
 const drawerWidth = 160;
+
+function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+function stringAvatar(name) {
+  console.log(name.user)
+  return {
+    sx: {
+      bgcolor: stringToColor(name.user),
+    },
+    children: `${capitalizeFirstLetter(name.user[0])}`,
+  };
+}
+function stringToColor(string) {
+  let hash = 0;
+  let i;
+
+  /* eslint-disable no-bitwise */
+  for (i = 0; i < string.length; i += 1) {
+    hash = string.charCodeAt(i) + ((hash << 5) - hash);
+  }
+
+  let color = '#';
+
+  for (i = 0; i < 3; i += 1) {
+    const value = (hash >> (i * 8)) & 0xff;
+    color += `00${value.toString(16)}`.slice(-2);
+  }
+  /* eslint-enable no-bitwise */
+
+  return color;
+}
 
 export default function Home() {
   const navigate = useNavigate();
   const [date, setDate] = React.useState(dayjs('2021-08-05'));
-  
+  const [user, setUser] = React.useState('a');
   const onDateChange = (date) => {
     setDate(date)
   }
   const onClickSidebarOption = (data) => {
     console.log(data);
-    if (data === 'All Bonds Table') {
+    if (data === 'Bonds & Trades') {
       navigate("/home/allbond");
     } else {
       navigate("/home/bonds");
     }
   };
+  const [showBondDialog, setShowBondDialog] = useState(false);
+  const [selectedIsin, setSelectedIsin] = useState('');
+  const [urgentIsins, setUrgentIsins] = useState([]);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const handleNotificationsClick = () => {
+    setShowNotifications(!showNotifications);
+  };
+
+  const handleIsinClick = (isin) => {
+    setSelectedIsin(isin);
+    setShowBondDialog(true);
+  };
 
   const logOut = () => {
-    console.log('logout');
+    
     localStorage.setItem('authenticated', 'false');
+    localStorage.setItem('jwtToken', null);
     navigate("/login");
   }
 
@@ -55,7 +115,57 @@ export default function Home() {
     if(localStorage.getItem('authenticated') != 'true'){
       navigate("/login");
     }
+    getUserData().then((data)=> {
+      console.log(data)
+      setUser(data)
+    }).catch((error) => {
+      console.log('error getting user data');
+    })
   })
+
+  useEffect(() => {
+    let newDate = new Date(date);
+    newDate = format(newDate, 'dd-MM-yyyy');
+    getIsinsOfUrgentUnredeemedBonds(newDate)
+      .then((isin) => {
+        setUrgentIsins(isin);
+      })
+      .catch((error) => {
+        console.error('Error fetching urgent unredeemed bonds:', error);
+      });
+  }, [date]);
+
+  const generateNotificationMessage = (isin) => {
+    const count = isin.length;
+    if (count === 0) {
+      return 'No urgent bond redemptions for the selected date.';
+    }
+    const ids = isin.map((id) => (
+      <span
+        key={id}
+        style={{ color: 'red', cursor: 'pointer' }}
+        onClick={() => handleIsinClick(id)}
+      >
+        {id}
+      </span>
+    ));
+    const idsWithNewLine = ids.reduce((acc, id) => (
+      <>
+        {acc}
+        <br /> 
+        {id}
+      </>
+    ));
+  
+    return (
+      <div style={{ textAlign: 'justify' }}>
+        {`You have `}
+        <span style={{ color: 'red' }}>{count}</span>
+        {` bond${count > 1 ? 's' : ''} with urgent redemption coming through that are past or at their expiration date! \n\nISIN:\n\ `}
+        {idsWithNewLine}
+      </div>
+    );
+  };
   
 
   return (
@@ -73,8 +183,12 @@ export default function Home() {
             alt="Your logo."
             src={DB}
         />
-        
-        <div className="date-picker">
+         
+        <div style={{color: 'white', fontSize: 25, fontWeight:700}} >Bond Brigade</div>
+
+        <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+       
+        <div className="date-picker" >
           <LocalizationProvider dateAdapter={AdapterDayjs} >
               <DatePicker 
                 inputFormat="DD-MM-YYYY"
@@ -86,8 +200,22 @@ export default function Home() {
                 input: { color: '#fff' },
               }} />
           </LocalizationProvider>
-          <LogoutIcon style={{cursor:'pointer', marginTop: '6', marginLeft: '15', marginRight: '7'}} onClick={logOut}/>
+          
+         
         </div>
+        <Tooltip title={user} style={{}}>
+        <IconButton>
+          <Avatar style={{ backgroundColor:'green'}}>{capitalizeFirstLetter(user[0])}</Avatar>
+       </IconButton>
+       </Tooltip>
+       <IconButton>
+          <Badge badgeContent={urgentIsins.length} color="error">
+            <NotificationsIcon style={{ cursor: 'pointer', marginRight: '10px', marginLeft: '10px', color: '#fff' }} onClick={handleNotificationsClick} />
+          </Badge>
+        </IconButton>
+        <LogoutIcon style={{cursor:'pointer', marginLeft: '15', marginRight: '7'}} onClick={logOut}/>
+        </div>
+        
         
       
         
@@ -105,12 +233,12 @@ export default function Home() {
         <Toolbar />
         <Box sx={{ overflow: 'auto' }}>
           <List>
-            {['Bonds', 'All Bonds Table'].map((text, index) => (
+            {['Bonds', 'Bonds & Trades'].map((text, index) => (
               
               <ListItem key={text} disablePadding  onClick={()=> {onClickSidebarOption(text)}}>
                 <ListItemButton>
                   <ListItemIcon>
-                    {index % 2 === 0 ? <AccountBalanceWalletIcon /> : <AccountBalanceWalletIcon />}
+                     {index === 0 ? <AccountBalanceWalletIcon /> : index === 1 ? <DescriptionIcon /> : null}
                   </ListItemIcon>
                   <ListItemText primary={text} />
                 </ListItemButton>
@@ -122,7 +250,25 @@ export default function Home() {
       <Outlet context={[date]}/>
       
     </Box>
-    
+    <Drawer
+        anchor="right"
+        open={showNotifications}
+        onClose={() => setShowNotifications(false)}
+      >
+        <div style={{ padding: '90px', maxWidth: '370px' }}>
+          <Typography variant="h6" style={{ marginBottom: '16px' }}>
+            Urgent Redemptions
+          </Typography>
+          <Typography style={{ whiteSpace: 'pre-line' }}>
+            {generateNotificationMessage(urgentIsins)}
+          </Typography>
+        </div>
+    </Drawer>
+    <BondDialogBox
+      open={showBondDialog}
+      handleClose={() => setShowBondDialog(false)}
+      isin={selectedIsin}
+    />
   </>
   );
 }

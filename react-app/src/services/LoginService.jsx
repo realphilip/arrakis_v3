@@ -5,16 +5,15 @@ import axios from "axios";
 export const SignIn = async (emailReceived, passwordReceived ) => {
     
     try {
-      console.log(emailReceived)
-      console.log(passwordReceived)
+      
+      
       const response = await axios.post(`${hostNameUrl}/users/signin`, {
         email: emailReceived,
         password: passwordReceived
       });
       localStorage.setItem('jwtToken', response.data);
-      if(localStorage.getItem('jwtToken') != null){
-        localStorage.setItem('authenticated', 'true');
-      }
+      localStorage.setItem('authenticated', 'true');
+      
       return response.data;
     } catch (error) {
       console.error("Error fetching bonds:", error);

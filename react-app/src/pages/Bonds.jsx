@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography';
 import BondCard from '../components/BondCard';
 import { useOutletContext } from "react-router-dom";
 import { useEffect } from 'react';
-import  {getAllBondsForBusinessDaysBeforeAndAfter, getAllBonds} from '../services/BondService';
+import  {getAllBondsForBusinessDaysBeforeAndAfter, getAllBonds, getMyBondsData} from '../services/BondService';
 import { format } from 'date-fns';
 import { useState } from 'react';
 import { Grid } from '@mui/material';
@@ -17,7 +17,7 @@ import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import { purple } from '@mui/material/colors';
 import {white } from '@mui/material/colors';
-
+import { setJwtToken } from '../services/BondService';
 const BootstrapButton = styled(Button)({
   boxShadow: 'none',
   textTransform: 'none',
@@ -65,10 +65,17 @@ const ColorButton = styled(Button)(({ theme }) => ({
 function Bonds() {
     const [bonds, setBonds] = new React.useState([]);
     const [currentDate] = useOutletContext();
-  
+    const [showAllbonds, setShowAllBonds] = useState(true);
+    const [showMybonds, setShowMyBonds] = useState(false);
+   
+    const falseAllShowState = () => {
+      setShowAllBonds(false);
+      setShowMyBonds(false);
+    }
     const getBonds = ()=> {
+
       getAllBonds().then((data) => {
-          console.log(data)
+          
       })
       .catch((error) => console.error("Error fetching bonds:", error));
     }
@@ -77,39 +84,48 @@ function Bonds() {
       let newDate = new Date(currentDate);
       newDate = format(newDate, 'dd-MM-yyyy');
       getAllBondsForBusinessDaysBeforeAndAfter(newDate).then((data) => {
-        console.log(data)
-        console.log('bonds data')
-        console.log(data);  
+        falseAllShowState();
+        setShowAllBonds(true); 
         setBonds(data);
+       
       }).catch((error) => {
-          console.log(error)
+          
       })
     }
     
     const getMyBonds = () => {
       let newDate = new Date(currentDate);
       newDate = format(newDate, 'dd-MM-yyyy');
-      getAllBondsForBusinessDaysBeforeAndAfter(newDate).then((data) => {
-        console.log(data)
-        console.log('bonds data')
-        console.log(data);  
+        getMyBondsData(newDate).then((data) => {
+        falseAllShowState();
+        setShowMyBonds(true); 
         setBonds(data);
+        
       }).catch((error) => {
-          console.log(error)
+          
       })
     } 
 
     useEffect(() => {
         try {
             if (localStorage.getItem('authenticated')=='true'){
-                 getBondsByDate();
+              const jwtToken = localStorage.getItem('jwtToken')
+              setJwtToken(jwtToken)
+              console.log(jwtToken);
+              if(!showMybonds) {
+                getBondsByDate();
+              }
+              else {
+                getMyBonds();
+              }
+              
             }
             
         } catch (error) {
             console.error("Error fetching bonds:", error);
         }
 
-    }, [currentDate, localStorage.getItem('authenticated')]);
+    }, [currentDate]);
 
     const formatDate = (date) => {
       const d = dayjs(date,'DD-MM-YYYY').format('DD-MM-YYYY');
@@ -120,16 +136,13 @@ function Bonds() {
     return (
       <div>
         <Toolbar />
-        
-         
-        {bonds && <Box component="main" sx={{ flexGrow: 1, p: 2 }} >
-          <div className="filters" style={{display: 'flex', justifyContent:'flex-end'}}>
-            <ColorButton variant="contained"  style={{ margin: "0 10px"}} onClick={getBondsByDate}>Bonds</ColorButton>
-            <ColorButton variant="contained" style={{ margin: "0 10px"}}>My Bonds</ColorButton>
-            <ColorButton variant="contained" style={{ margin: "0 10px"}}>Redeemed Bonds</ColorButton>
-            <ColorButton variant="contained" style={{ margin: "0 15px"}}>Unredeemed Bonds</ColorButton>
-          </div>
-            <Row className="row">
+        <Box component="main" sx={{ flexGrow: 1, p: 2 }} >
+          <Row className="row"  style={{display: 'flex', justifyContent:'flex-end'}}>
+            <ColorButton variant="contained"  style={{ margin: "0 10px"}} onClick={getBondsByDate} disabled={showAllbonds}>All Bonds</ColorButton>
+            <ColorButton variant="contained" style={{ margin: "0 10px"}} onClick={getMyBonds} disabled={showMybonds}>My Bonds</ColorButton>
+          </Row>
+  
+          {bonds &&<Row className="row" style={{width: '85vw'}}>
         
               {Object.entries(bonds).map(([date, values, index]) => (
                 <div className="container" key={date}>
@@ -140,7 +153,13 @@ function Bonds() {
                 // </div>
               ))}
       
-            </Row>
+            </Row>}
+            {bonds.length === 0 &&<div className="row" style={{display: 'grid', placeItems:'center' ,width: '85vw'}}>
+            
+            <div className="container" >
+                 <p>No Data available to display</p>
+                </div>
+            </div>}
           
               {/* <Row className="row">
                     {bonds.map((bond, index) => (
@@ -149,7 +168,7 @@ function Bonds() {
                       </div>
                     ))}
               </Row> */}
-          </Box>}
+          </Box>
           
         </div>
       );
