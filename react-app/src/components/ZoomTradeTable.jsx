@@ -100,7 +100,13 @@ export default function ZoomTradeTable({ isin }) {
     fetchData();
   }, [isin]);
 
-  
+  const formatDate = (date) => {
+    const dateObj = new Date(date);
+    const day = dateObj.getDate().toString().padStart(2, '0');
+    const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+    const year = dateObj.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
 
 
   const handleChangePage = (event, newPage) => {
@@ -140,7 +146,11 @@ export default function ZoomTradeTable({ isin }) {
                               const value = row[column.id];
                               return (
                                 <TableCell key={column.id} align={column.align}>
-                                {column.id === 'bondHolderID' ? (
+                                {column.id === 'tradeDate'
+                                  ? formatDate(value)
+                                  :column.id === 'tradeSettlementDate'
+                                  ? formatDate(value)
+                                  :column.id === 'bondHolderID' ? (
                                   <span
                                     style={{ cursor: 'pointer' }}
                                     onClick={() => {

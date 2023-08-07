@@ -127,6 +127,14 @@ const ZoomBondTableAll = ({ onRowClick }) => {
     }
   };
 
+  const formatDate = (date) => {
+    const dateObj = new Date(date);
+    const day = dateObj.getDate().toString().padStart(2, '0');
+    const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+    const year = dateObj.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
+
   const handleRefreshTable = async () => {
     try {
       const updatedBonds = await getAllBonds();
@@ -188,7 +196,9 @@ const ZoomBondTableAll = ({ onRowClick }) => {
                         const value = row[column.id];
                         return (
                           <TableCell key={column.id} align={column.align}>
-                            {column.id === 'issuerID' ? (
+                            {column.id === 'bondMaturityDate'
+                              ? formatDate(value)
+                             :column.id === 'issuerID' ? (
                               <Tooltip
                                 title={
                                   <Typography variant="subtitle1">
