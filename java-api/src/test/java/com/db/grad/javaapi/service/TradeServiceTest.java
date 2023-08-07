@@ -10,10 +10,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -28,6 +25,32 @@ public class TradeServiceTest {
 
     @Mock
     private TradesRepository tradesRepository;
+
+    @Test
+    public void testGetAllTradesByISIN() {
+        String isinToFind = "ISIN2";
+
+        List<Trade> testTrades = new ArrayList<>();
+
+        Trade trade1 = new Trade();
+        trade1.setIsin("ISIN1");
+        testTrades.add(trade1);
+
+        Trade trade2 = new Trade();
+        trade2.setIsin("ISIN2"); // Trade with the ISIN to find
+        testTrades.add(trade2);
+
+        Trade trade3 = new Trade();
+        trade3.setIsin("ISIN3");
+        testTrades.add(trade3);
+
+        Mockito.when(tradesRepository.findAll()).thenReturn(testTrades);
+
+        List<Trade> resultTrades = tradeService.getAllTradesByISIN(isinToFind);
+
+        assertEquals(1, resultTrades.size());
+        assertEquals(trade2, resultTrades.get(0));
+    }
 
     @Test
     public void getStatsFromTrades() {
