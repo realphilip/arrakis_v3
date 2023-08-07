@@ -18,7 +18,8 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import BondCardTable from './BondCardTable';
 import Row from "react-bootstrap/Row";
 import { format, compareAsc } from 'date-fns';
-
+import { isBefore, isAfter, isEqual } from 'date-fns';
+import dayjs from 'dayjs';
 
 const ExpandMore = styled((props) => {
   const { expand, ...other } = props;
@@ -33,42 +34,39 @@ const ExpandMore = styled((props) => {
 
 export default function BondCard({ date, bond, currentDate }) {
   const [expanded, setExpanded] = React.useState(false);
-  const [newDate, setDate ] = React.useState()
+  const [newDate, setDate ] = React.useState();
+  const [cardColor, setCardColor] = React.useState();
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
   
-  useEffect(() => {
-    date = setDate(formatDate(date));
-  })
+
+  const getBackgroundColor = () =>{
+    const dateGot =  formatDate(date);
+    const date2 =  formatDate(currentDate);
+
+    const date1 = dayjs(dateGot, 'DD-MM-YYYY');
+    const currentDateParsed = dayjs(date2, 'DD-MM-YYYY');
+
+    // Compare the two dates
+    const isDate1BeforeCurrentDate = date1.isBefore(currentDateParsed);
+    const isDate1AfterCurrentDate = date1.isAfter(currentDateParsed);
+    const areDatesEqual = date1.isSame(currentDateParsed);
+ 
+    
+    return areDatesEqual ? orange[300]: isDate1BeforeCurrentDate ? red[300]: green[300];
+
+  }
 
   const formatDate = (date) => {
-    console.log(date)
-    let newDate = new Date()
-    try{
-      newDate = format(new Date(date), 'dd MMM, YYY')
-    }
-    catch(error) {
-      newDate = null;
-    }
-    return newDate;
+     return dayjs(date,'DD-MM-YYYY').format('DD-MM-YYYY');
   }
-    // Compare the selected date with the current date
-    const comparisonResult = compareAsc(new Date(date), new Date(currentDate));
-
-    // Set the card background color based on the comparison result
-    let cardColor;
-    if (comparisonResult === 0) {
-      cardColor = orange[500]; // Orange for the current date
-    } else if (comparisonResult === -1) {
-      cardColor = red[500]; // Red for dates before the current date
-    } else {
-      cardColor = green[500]; // Green for dates after the current date
-    }
+  // Compare the selected date with the current date
+  
     
   return (
-    <Card sx={{ maxWidth: 450, backgroundColor: cardColor }}>
-        <CardHeader title={date} />
+    <Card sx={{ maxWidth: 320}}>
+        <CardHeader  sx={{ maxWidth: 320, backgroundColor: getBackgroundColor }} title={date} />
       <CardContent>
         <BondCardTable bond={bond} date={date} />
       </CardContent>

@@ -11,11 +11,11 @@ import  {getAllBondsForBusinessDaysBeforeAndAfter, getAllBonds} from '../service
 import { format } from 'date-fns';
 import { useState } from 'react';
 import { Grid } from '@mui/material';
-
+import dayjs from 'dayjs';
 
 function Bonds() {
     const [bonds, setBonds] = new React.useState([]);
-    const [date] = useOutletContext();
+    const [currentDate] = useOutletContext();
   
     const getBonds = ()=> {
       getAllBonds().then((data) => {
@@ -25,9 +25,10 @@ function Bonds() {
     }
   
     const getBondsByDate = () => {    
-      let newDate = new Date(date);
+      let newDate = new Date(currentDate);
       newDate = format(newDate, 'dd-MM-yyyy');
       getAllBondsForBusinessDaysBeforeAndAfter(newDate).then((data) => {
+        console.log(data)
         console.log('bonds data')
         console.log(data);  
         setBonds(data);
@@ -37,8 +38,6 @@ function Bonds() {
     }  
 
     useEffect(() => {
-
-       console.log(date)
         try {
             if (localStorage.getItem('authenticated')=='true'){
                  getBondsByDate();
@@ -48,7 +47,12 @@ function Bonds() {
             console.error("Error fetching bonds:", error);
         }
 
-    }, [date,localStorage.getItem('authenticated')]);
+    }, [currentDate, localStorage.getItem('authenticated')]);
+
+    const formatDate = (date) => {
+      const d = dayjs(date,'DD-MM-YYYY').format('DD-MM-YYYY');
+      return d;
+    }
 
     return (
       <div>
@@ -58,7 +62,7 @@ function Bonds() {
         
               {Object.entries(bonds).map(([date, values, index]) => (
                 <div className="container" key={date}>
-                  <BondCard key={date} date={date}  bond={values} currentDate={new Date()} /> 
+                  <BondCard key={date} date={formatDate(date)}  bond={values} currentDate={currentDate} /> 
                 </div>
                 // <div className="container" key={date}>
                 //   <BondCard key={index} bond={values} date={date} /> 
