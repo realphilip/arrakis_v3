@@ -52,7 +52,7 @@ public class BondsController {
         return bondService.getAllMatureBondsByBondTypeAndDate(bondType, date);
     }
 
-    @GetMapping(value = {"/bonds/dates/{date}/{daysBefore}/{daysAfter}"})
+    @GetMapping(value = {"/bonds/email/dates/{date}/{daysBefore}/{daysAfter}"})
     public Map<String, Map<String, Integer>> getNoOfBondsForBusinessDaysBeforeAndAfterOfTypeOfEmail(HttpServletRequest request,
                                                                                                     @PathVariable(value = "date") String date,
                                                                                                     @PathVariable(value = "daysBefore") int daysBefore,
@@ -62,7 +62,7 @@ public class BondsController {
         return bondService.getAllBondsForBusinessDaysBeforeAndAfterOfEmail(date, daysBefore, daysAfter, email);
     }
 
-    @GetMapping(value = {"/bonds/bondType/{bondType}/date/{date}"})
+    @GetMapping(value = {"/bonds/email/bondType/{bondType}/date/{date}"})
     public List<Bond> getMaturedBondsByBondTypeAndDateOfEmail(HttpServletRequest request,
                                                               @PathVariable(value = "bondType") String bondType,
                                                               @PathVariable(value = "date") String date) throws ParseException {
