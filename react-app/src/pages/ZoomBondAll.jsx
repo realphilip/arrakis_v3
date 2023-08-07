@@ -35,13 +35,15 @@ const ZoomBondAll = () => {
   return (
     <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
       <Toolbar />
-      <Row className="row">
-        <Grid container spacing={2}>
+      
+       <div style={{maxWidth: '87vw'}}>
+
+      
           <Grid item xs={12} md={6}>
             <Card className="card">
               <CardHeader className="cardHeader" title="BOND TABLE" />
               <CardContent className="cardContent">
-                <TableContainer component={Paper}>
+                <TableContainer >
                   {/* Pass onRowClick prop to ZoomBondTable */}
                   <ZoomBondTableAll onRowClick={handleRowClick} />
                 </TableContainer>
@@ -52,15 +54,14 @@ const ZoomBondAll = () => {
             <Card className="card">
               <CardHeader className="cardHeader" title="TRADE TABLE" />
               <CardContent className="cardContent">
-                <TableContainer component={Paper}>
+                <TableContainer >
                   {/* Pass isin prop to ZoomTradeTable */}
                   <ZoomTradeTable isin={selectedISIN} />
                 </TableContainer>
               </CardContent>
             </Card>
           </Grid>
-        </Grid>
-      </Row>
+          </div>
     </Box>
   );
 };
