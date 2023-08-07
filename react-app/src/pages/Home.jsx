@@ -28,12 +28,54 @@ import dayjs from "dayjs";
 import '../App.css';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useEffect } from 'react';
+import Avatar from '@mui/material/Avatar';
+import Tooltip from '@mui/material/Tooltip';
+import { deepOrange, deepPurple } from '@mui/material/colors';
+import { getUserData } from '../services/BondService';
+import DeleteIcon from '@mui/icons-material/Delete';
+import IconButton from '@mui/material/IconButton';
+
+
+
 const drawerWidth = 160;
+
+function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+function stringAvatar(name) {
+  console.log(name.user)
+  return {
+    sx: {
+      bgcolor: stringToColor(name.user),
+    },
+    children: `${capitalizeFirstLetter(name.user[0])}`,
+  };
+}
+function stringToColor(string) {
+  let hash = 0;
+  let i;
+
+  /* eslint-disable no-bitwise */
+  for (i = 0; i < string.length; i += 1) {
+    hash = string.charCodeAt(i) + ((hash << 5) - hash);
+  }
+
+  let color = '#';
+
+  for (i = 0; i < 3; i += 1) {
+    const value = (hash >> (i * 8)) & 0xff;
+    color += `00${value.toString(16)}`.slice(-2);
+  }
+  /* eslint-enable no-bitwise */
+
+  return color;
+}
 
 export default function Home() {
   const navigate = useNavigate();
   const [date, setDate] = React.useState(dayjs('2021-08-05'));
-  
+  const [user, setUser] = React.useState('a');
   const onDateChange = (date) => {
     setDate(date)
   }
@@ -56,6 +98,12 @@ export default function Home() {
     if(localStorage.getItem('authenticated') != 'true'){
       navigate("/login");
     }
+    getUserData().then((data)=> {
+      console.log(data)
+      setUser(data)
+    }).catch((error) => {
+      console.log('error getting user data');
+    })
   })
   
 
@@ -75,7 +123,11 @@ export default function Home() {
             src={DB}
         />
         
-        <div className="date-picker">
+        <div style={{color: 'white', fontSize: 25, fontWeight:700}} >Bond Brigade</div>
+
+        <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+       
+        <div className="date-picker" >
           <LocalizationProvider dateAdapter={AdapterDayjs} >
               <DatePicker 
                 inputFormat="DD-MM-YYYY"
@@ -87,8 +139,17 @@ export default function Home() {
                 input: { color: '#fff' },
               }} />
           </LocalizationProvider>
-          <LogoutIcon style={{cursor:'pointer', marginTop: '6', marginLeft: '15', marginRight: '7'}} onClick={logOut}/>
+          
+         
         </div>
+        <Tooltip title={user} style={{}}>
+        <IconButton>
+          <Avatar style={{ backgroundColor:'green'}}>{capitalizeFirstLetter(user[0])}</Avatar>
+       </IconButton>
+       </Tooltip>
+        <LogoutIcon style={{cursor:'pointer', marginLeft: '15', marginRight: '7'}} onClick={logOut}/>
+        </div>
+        
         
       
         

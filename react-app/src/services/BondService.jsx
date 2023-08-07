@@ -39,6 +39,18 @@ export const getAllBondsForBusinessDaysBeforeAndAfter = async (date) => {
   }
 };
 
+export const getUserData = async () => {
+  
+  try {
+    const response = await HttpService.get(`/users/getuser`);
+    const userData = response.data;
+    return userData;
+  } catch (error) {
+    console.error("Error fetching user data", error);
+    throw error;
+  }
+}
+
 export const getMyBondsData = async (date) => {
   const daysBefore = 5;
   const daysAfter = 5;
