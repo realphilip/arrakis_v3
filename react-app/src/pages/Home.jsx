@@ -91,6 +91,7 @@ export default function Home() {
       navigate("/home/bonds");
     }
   };
+  const [resolvedIsins, setResolvedIsins] = useState([]);
   const [showBondDialog, setShowBondDialog] = useState(false);
   const [selectedIsin, setSelectedIsin] = useState('');
   const [urgentIsins, setUrgentIsins] = useState([]);
@@ -136,11 +137,13 @@ export default function Home() {
   }, [date]);
 
   const generateNotificationMessage = (isin) => {
-    const count = isin.length;
+    const unresolvedIsins = isin.filter((id) => !resolvedIsins.includes(id));
+
+    const count = unresolvedIsins.length;
     if (count === 0) {
       return 'No urgent bond redemptions for the selected date.';
     }
-    const ids = isin.map((id) => (
+    const ids = unresolvedIsins.map((id) => (
       <span
         key={id}
         style={{ color: 'red', cursor: 'pointer' }}
@@ -209,8 +212,11 @@ export default function Home() {
        </IconButton>
        </Tooltip>
        <IconButton>
-          <Badge badgeContent={urgentIsins.length} color="error">
-            <NotificationsIcon style={{ cursor: 'pointer', marginRight: '10px', marginLeft: '10px', color: '#fff' }} onClick={handleNotificationsClick} />
+          <Badge badgeContent={urgentIsins.length - resolvedIsins.length} color="error">
+            <NotificationsIcon
+              style={{ cursor: 'pointer', marginRight: '10px', marginLeft: '10px', color: '#fff' }}
+              onClick={handleNotificationsClick}
+            />
           </Badge>
         </IconButton>
         <LogoutIcon style={{cursor:'pointer', marginLeft: '15', marginRight: '7'}} onClick={logOut}/>
@@ -268,6 +274,9 @@ export default function Home() {
       open={showBondDialog}
       handleClose={() => setShowBondDialog(false)}
       isin={selectedIsin}
+      refreshTable={() => {
+        setResolvedIsins((prevIsins) => [...prevIsins, selectedIsin]);
+      }}
     />
   </>
   );
