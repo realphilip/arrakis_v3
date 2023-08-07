@@ -65,7 +65,7 @@ export default function BondCard({ date, bond, currentDate }) {
   
     
   return (
-    <Card sx={{ maxWidth: 320}}>
+    <Card sx={{ maxWidth: 320}} style={{borderRadius: '10px'}}>
         <CardHeader  sx={{ maxWidth: 320, backgroundColor: getBackgroundColor }} title={date} />
       <CardContent>
         <BondCardTable bond={bond} date={date} />
