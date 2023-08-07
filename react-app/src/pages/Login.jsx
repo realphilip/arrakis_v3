@@ -27,10 +27,9 @@ function Login() {
     if (validateForm()) {
         // Perform login/authentication logic here
         // For simplicity, let's just call the onLogin callback
-        console.log('hello')
         try {
             // const user = await loginUser(username, password);
-            setErrors({ login: 'Invalid username or password' });
+           
             const jwtToken = await SignIn(username, password);
             if(localStorage.getItem('authenticated')=='true') {
               console.log(localStorage.getItem('jwtToken'))
@@ -38,7 +37,7 @@ function Login() {
             }
             // onLogin(user.username);
           } catch (error) {
-            
+            setErrors({ login: 'Invalid username or password' });
           }
       }
     // Perform login/authentication logic here
