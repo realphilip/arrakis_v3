@@ -222,10 +222,6 @@ export default function Home() {
         <LogoutIcon style={{cursor:'pointer', marginLeft: '15', marginRight: '7'}} onClick={logOut}/>
         </div>
         
-        
-      
-        
-      
         </Toolbar>
       </AppBar>
       <Drawer
