@@ -11,11 +11,10 @@ import  { useEffect } from 'react';
 
 import ZoomBondAll from "./pages/ZoomBondAll";
 const isAuthenticated = () => {
-  // Replace with your actual authentication logic
   return localStorage.getItem('authenticated') == 'true' ;
 };
 
-// ProtectedRoute component
+
 const ProtectedRoute = ({ component: Component, ...rest }) => (
   <Route
     {...rest}

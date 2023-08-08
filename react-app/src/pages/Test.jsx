@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getAllBonds } from "../services/BondService"; // Adjust the path accordingly
+import { getAllBonds } from "../services/BondService"; 
 
 const Test = () => {
   const [bonds, setBonds] = useState([]);

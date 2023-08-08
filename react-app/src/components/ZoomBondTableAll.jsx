@@ -107,7 +107,6 @@ const ZoomBondTableAll = ({ onRowClick }) => {
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-        // Assuming you have a function named getAllBonds
         const bonds = await getAllBonds();
         setRows(bonds);
       } catch (error) {

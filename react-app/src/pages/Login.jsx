@@ -25,7 +25,6 @@ function Login() {
     e.preventDefault();
     if (validateForm()) {
         // Perform login/authentication logic here
-        // For simplicity, let's just call the onLogin callback
         try {
             // const user = await loginUser(username, password);
             let jwtToken = await SignIn(username, password);
@@ -44,8 +43,8 @@ function Login() {
             setErrors({ login: 'Invalid username or password' });
           }
       }
-    // Perform login/authentication logic here
-    // For simplicity, let's just call the onLogin callback
+   
+
    
   };
 

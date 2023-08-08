@@ -82,23 +82,21 @@
 
 
 .date-picker input {
-  /* Set a custom border to indicate focus */
-  border: 2px solid transparent; /* Change the color as per your requirement */
+  border: 2px solid transparent; 
   border-radius: 5px;
   padding: 5px;
-  /* Set the font color to white */
   color: white;
   width: 90px;
 }
 
-/* Change the placeholder color to white */
+
 .date-picker input::placeholder {
   color: white;
 }
 
-/* Customize the focus outline */
+
 .date-picker input:focus {
-  border: 2px solid transparent; /* Change the color as per your requirement */
+  border: 2px solid transparent; 
   outline: none;
 }
 
@@ -108,7 +106,6 @@
 
 
 .date-picker .logo-element {
-  /* Set the logo color to white */
   color: white;
 }
 

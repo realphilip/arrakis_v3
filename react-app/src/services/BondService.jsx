@@ -128,7 +128,7 @@ export const getStatsByBondHolderID = async (bondHolderId) => {
 
 export const triggerBondRedemption = async (isin) => {
   try {
-    const response = await axios.patch(`${hostNameUrl}/bonds/redemption/${isin}`, { headers });
+    const response = await HttpService.patch(`${hostNameUrl}/bonds/redemption/${isin}`, { headers });
     return response.data;
   } catch (error) {
     console.error("Error triggering bond redemption:", error);

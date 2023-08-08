@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:8080'; // Replace with your API base URL
-// Replace with your actual Authorization token
+const BASE_URL = 'http://localhost:8080'; 
+
 const token = localStorage.getItem('jwtToken');
 export const HttpService = axios.create({
   baseURL: BASE_URL,
