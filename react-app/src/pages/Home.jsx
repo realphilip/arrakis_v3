@@ -203,7 +203,7 @@ export default function Home() {
           
          
         </div>
-        <Tooltip title={user} style={{}}>
+        <Tooltip title={user} style={{marginLeft: '10px'}}>
         <IconButton>
           <Avatar style={{ backgroundColor:'green'}}>{capitalizeFirstLetter(user[0])}</Avatar>
        </IconButton>
